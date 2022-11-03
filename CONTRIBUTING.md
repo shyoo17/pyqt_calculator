@@ -1,54 +1,195 @@
-# Contributing to Transcriptase
-We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
+## Contributing
 
-- Reporting a bug
-- Discussing the current state of the code
-- Submitting a fix
-- Proposing new features
-- Becoming a maintainer
+First off, thank you for considering contributing to Active Admin. It's people
+like you that make Active Admin such a great tool.
 
-## We Develop with Github
-We use github to host code, to track issues and feature requests, as well as accept pull requests.
+### Where do I go from here?
 
-## We Use [Github Flow](https://guides.github.com/introduction/flow/index.html), So All Code Changes Happen Through Pull Requests
-Pull requests are the best way to propose changes to the codebase (we use [Github Flow](https://guides.github.com/introduction/flow/index.html)). We actively welcome your pull requests:
+If you've noticed a bug or have a feature request, [make one][new issue]! It's
+generally best if you get confirmation of your bug or approval for your feature
+request this way before starting to code.
 
-1. Fork the repo and create your branch from `master`.
-2. If you've added code that should be tested, add tests.
-3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes.
-5. Make sure your code lints.
-6. Issue that pull request!
+If you have a general question about activeadmin, you can post it on [Stack
+Overflow], the issue tracker is only for bugs and feature requests.
 
-## Any contributions you make will be under the MIT Software License
-In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
+### Fork & create a branch
 
-## Report bugs using Github's [issues](https://github.com/briandk/transcriptase-atom/issues)
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](); it's that easy!
+If this is something you think you can fix, then [fork Active Admin] and create
+a branch with a descriptive name.
 
-## Write bug reports with detail, background, and sample code
-[This is an example](http://stackoverflow.com/q/12488905/180626) of a bug report I wrote, and I think it's not a bad model. Here's [another example from Craig Hockenberry](http://www.openradar.me/11905408), an app developer whom I greatly respect.
+A good branch name would be (where issue #325 is the ticket you're working on):
 
-**Great Bug Reports** tend to have:
+```sh
+git checkout -b 325-add-japanese-translations
+```
 
-- A quick summary and/or background
-- Steps to reproduce
-  - Be specific!
-  - Give sample code if you can. [My stackoverflow question](http://stackoverflow.com/q/12488905/180626) includes sample code that *anyone* with a base R setup can run to reproduce what I was seeing
-- What you expected would happen
-- What actually happens
-- Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
+### Get the test suite running
 
-People *love* thorough bug reports. I'm not even kidding.
+Make sure you're using a recent ruby and have the `bundler` gem installed, at
+least version `1.14.3`.
 
-## Use a Consistent Coding Style
-I'm again borrowing these from [Facebook's Guidelines](https://github.com/facebook/draft-js/blob/a9316a723f9e918afde44dea68b5f9f39b7d9b00/CONTRIBUTING.md)
+You'll also need chrome installed in order to run cucumber scenarios.
 
-* 2 spaces for indentation rather than tabs
-* You can try running `npm run lint` for style unification
+Now install the development dependencies:
 
-## License
-By contributing, you agree that your contributions will be licensed under its MIT License.
+```sh
+bundle install
+```
 
-## References
-This document was adapted from the open-source contribution guidelines for [Facebook's Draft](https://github.com/facebook/draft-js/blob/a9316a723f9e918afde44dea68b5f9f39b7d9b00/CONTRIBUTING.md)
+Then install javascript dependencies with [Yarn] (requires a current version of [Node.js]):
+
+```sh
+bin/yarn install
+```
+
+JS assets are located in `app/javascript/active_admin`. The config will take care of compiling a complete bundle with [Rollup] using the `build` script and exported to `app/assets/javascripts/active_admin/base.js` ready to be used by Sprockets.
+
+To update javascript bundle run (add `-w` flag for watch mode):
+
+```sh
+bin/yarn build
+```
+
+Now you should be able to run the entire suite using:
+
+```sh
+bin/rake
+```
+
+The test run will generate a sample Rails application in `tmp/test_apps` to run the
+tests against.
+
+If you want to test against a Rails version different from the latest, make sure
+you use the correct Gemfile, for example:
+
+```sh
+export BUNDLE_GEMFILE=gemfiles/rails_61/Gemfile
+```
+
+**Warning** SCSS assets are aimed to be used indifferently with Sprockets **and** webpacker.
+As such, make sure not to use any sass-rails directives such as `asset-url` or `image-url`.
+
+### Implement your fix or feature
+
+At this point, you're ready to make your changes! Feel free to ask for help;
+everyone is a beginner at first :smile_cat:
+
+### View your changes in a Rails application
+
+Active Admin is meant to be used by humans, not cucumbers. So make sure to take
+a look at your changes in a browser.
+
+To boot up a test Rails app:
+
+```sh
+bin/rake local server
+```
+
+This will automatically create a Rails app if none already exists, and store it
+in the `tmp/development_apps` folder.
+
+You should now be able to open <http://localhost:3000/admin> in your browser.
+You can log in using:
+
+*User*: admin@example.com
+*Password*: password
+
+If you need to perform any other commands on the test application, just pass
+them to the `local` rake task. For example, to boot the rails console:
+
+```sh
+bin/rake local console
+```
+
+Or to migrate the database, if you create a new migration or just play around
+with the db:
+
+```sh
+bin/rake local db:migrate
+```
+
+### Get the style right
+
+Your patch should follow the same conventions & pass the same code quality
+checks as the rest of the project. `bin/rake lint` will give you feedback in
+this regard. You can check & fix style issues by running each linter
+individually. Run `bin/rake -T lint` to see the available linters.
+
+### Make a Pull Request
+
+At this point, you should switch back to your master branch and make sure it's
+up to date with Active Admin's master branch:
+
+```sh
+git remote add upstream git@github.com:activeadmin/activeadmin.git
+git checkout master
+git pull upstream master
+```
+
+Then update your feature branch from your local copy of master, and push it!
+
+```sh
+git checkout 325-add-japanese-translations
+git rebase master
+git push --set-upstream origin 325-add-japanese-translations
+```
+
+Finally, go to GitHub and [make a Pull Request][] :D
+
+Github Actions will run our test suite against all supported Rails versions. We
+care about quality, so your PR won't be merged until all tests pass. It's
+unlikely, but it's possible that your changes pass tests in one Rails version
+but fail in another. In that case, you'll have to setup your development
+environment (as explained in step 3) to use the problematic Rails version, and
+investigate what's going on!
+
+### Keeping your Pull Request updated
+
+If a maintainer asks you to "rebase" your PR, they're saying that a lot of code
+has changed, and that you need to update your branch so it's easier to merge.
+
+To learn more about rebasing in Git, there are a lot of [good][git rebasing]
+[resources][interactive rebase] but here's the suggested workflow:
+
+```sh
+git checkout 325-add-japanese-translations
+git pull --rebase upstream master
+git push --force-with-lease 325-add-japanese-translations
+```
+
+### Merging a PR (maintainers only)
+
+A PR can only be merged into master by a maintainer if:
+
+* It is passing CI.
+* It has been approved by at least two maintainers. If it was a maintainer who
+  opened the PR, only one extra approval is needed.
+* It has no requested changes.
+* It is up to date with current master.
+
+Any maintainer is allowed to merge a PR if all of these conditions are
+met.
+
+### Shipping a release (maintainers only)
+
+Maintainers need to do the following to push out a release:
+
+* Switch to the master branch and make sure it's up to date.
+* Make sure you have [chandler] properly configured. Chandler is used to
+  automatically submit github release notes from the changelog right after
+  pushing the gem to rubygems.
+* Run one of `bin/rake release:prepare_{prerelease,prepatch,patch,preminor,minor,premajor,major}`, push the result and create a PR.
+* Review and merge the PR. The generated changelog in the PR should include all user visible changes you intend to ship.
+* Run `bin/rake release` from the target branch once the PR is merged.
+
+[chandler]: https://github.com/mattbrictson/chandler#2-configure-credentials
+[Stack Overflow]: http://stackoverflow.com/questions/tagged/activeadmin
+[new issue]: https://github.com/activeadmin/activeadmin/issues/new
+[fork Active Admin]: https://help.github.com/articles/fork-a-repo
+[make a pull request]: https://help.github.com/articles/creating-a-pull-request
+[git rebasing]: http://git-scm.com/book/en/Git-Branching-Rebasing
+[interactive rebase]: https://help.github.com/en/github/using-git/about-git-rebase
+[shortcut reference links]: https://github.github.com/gfm/#shortcut-reference-link
+[Rollup]: https://rollupjs.org/guide/en/#quick-start
+[Yarn]: https://yarnpkg.com/en/docs/install
+[Node.js]: https://nodejs.org/en/
