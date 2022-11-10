@@ -20,10 +20,12 @@ class Main(QDialog):
         label_solution = QLabel("Number: ")
         self.equation = QLineEdit("")
         self.solution = QLineEdit("")
+        self.number_ui = QLineEdit("")
 
         ### layout_equation_solution 레이아웃에 수식, 답 위젯을 추가
-        layout_equation_solution.addRow(label_equation, self.equation)
-        layout_equation_solution.addRow(label_solution, self.solution)
+        # layout_equation_solution.addRow(label_equation, self.equation)
+        # layout_equation_solution.addRow(label_solution, self.solution)
+        layout_equation_solution.addRow(self.number_ui)
 
         ### 사칙연상 버튼 생성
         button_plus = QPushButton("+")
@@ -98,14 +100,23 @@ class Main(QDialog):
         self.equation.setText(equation)
 
     def button_operation_clicked(self, operation):
-        equation = self.equation.text()
-        equation += operation
-        self.equation.setText(equation)
+        # equation = self.equation.text()
+        # equation += operation
+        # self.equation.setText(equation)
+        self.temp_number = float(self.number_ui.text())
+        self.temp_operand = operation
+        self.number_ui.setText("")
 
     def button_equal_clicked(self):
-        equation = self.equation.text()
-        solution = eval(equation)
-        self.solution.setText(str(solution))
+        # equation = self.equation.text()
+        # solution = eval(equation)
+        # self.solution.setText(str(solution))
+
+        if self.temp_operand == "+":
+            temp_result = self.temp_number + float(self.number_ui.text())
+            
+        self.number_ui.setText(str(temp_result))
+
 
     def button_clear_clicked(self):
         self.equation.setText("")
@@ -115,6 +126,7 @@ class Main(QDialog):
         equation = self.equation.text()
         equation = equation[:-1]
         self.equation.setText(equation)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
